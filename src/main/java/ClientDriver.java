@@ -22,7 +22,7 @@ public class ClientDriver {
         String ip = args[0]; // "192.168.48.219";
         int port = 27017;
         driver.connect(ip, port);
-        driver.test();
+        // driver.test();
 
         long startTime = System.currentTimeMillis();
         int totalXact = driver.readInput();
