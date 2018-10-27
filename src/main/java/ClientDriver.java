@@ -5,7 +5,9 @@ import java.util.Scanner;
 import org.bson.Document;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.ReadConcern;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoClient;
 
@@ -15,6 +17,8 @@ import com.mongodb.client.MongoDatabase;
 public class ClientDriver {
     public MongoClient mongoClient;
     public MongoDatabase mongoDatabase;
+    private ReadConcern readConcern;
+    private WriteConcern writeConcern;
 
     public static void main(String[] args) {
         ClientDriver driver = new ClientDriver();
@@ -124,9 +128,27 @@ public class ClientDriver {
     }
 
     private boolean checkArguments(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 3) {
             System.out.println("Wrong argument input, correct format is " +
-                    "~/apache-maven-3.5.4/bin/mvn exec:java -Dexec.args=\"[ip_address] [consistency_level] < [input_file_name]\"");
+                    "~/apache-maven-3.5.4/bin/mvn exec:java -Dexec.args=\"[ip_address] [read_concern] [write_concern] < [input_file_name]\"");
+            return false;
+        }
+        String read = args[1];
+        if (read.toLowerCase().equals("local")) {
+            readConcern = ReadConcern.LOCAL;
+        } else if (read.toLowerCase().equals("majority")) {
+            readConcern = ReadConcern.MAJORITY;
+        } else {
+            System.out.println("Read concern level can only be local or majority");
+            return false;
+        }
+        String write = args[2];
+        if (write.toLowerCase().equals("1")) {
+            writeConcern = WriteConcern.W1;
+        } else if (write.toLowerCase().equals("majority")) {
+            writeConcern = WriteConcern.MAJORITY;
+        } else {
+            System.out.println("Write concern level can only be 1 or majority");
             return false;
         }
         return true;
@@ -138,6 +160,6 @@ public class ClientDriver {
                         .applyToClusterSettings(builder ->
                                 builder.hosts(Arrays.asList(new ServerAddress(ip, port))))
                         .build());
-        mongoDatabase = mongoClient.getDatabase("test");
+        mongoDatabase = mongoClient.getDatabase("test").withReadConcern(readConcern).withWriteConcern(writeConcern);
     }
 }
