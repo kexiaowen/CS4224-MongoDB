@@ -32,6 +32,21 @@ public class Transaction1 {
     }
 
     public void execute() {
-
+        int nextOID = retrieveAndUpdateOID();
+        insertNewOrder(nextOID);
+        double rawAmount = insertOrderLinesAndComputePrice(nextOID);
+        printResult(nextOID, rawAmount);
     }
+
+    private int retrieveAndUpdateOID() {
+        return 0;
+    }
+
+    private void insertNewOrder(int nextOid) {}
+
+    private double insertOrderLinesAndComputePrice(int nextOid) {
+        return 0;
+    }
+
+    private void printResult(int nextOid, double rawAmount) {}
 }
