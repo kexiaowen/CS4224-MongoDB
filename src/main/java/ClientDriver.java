@@ -134,20 +134,16 @@ public class ClientDriver {
             return false;
         }
         String read = args[1];
-        if (read.toLowerCase().equals("local")) {
-            readConcern = ReadConcern.LOCAL;
-        } else if (read.toLowerCase().equals("majority")) {
-            readConcern = ReadConcern.MAJORITY;
-        } else {
-            System.out.println("Read concern level can only be local or majority");
-            return false;
-        }
         String write = args[2];
-        if (write.toLowerCase().equals("1")) {
+
+        if (read.toLowerCase().equals("local") && write.toLowerCase().equals("1")) {
+            readConcern = ReadConcern.LOCAL;
             writeConcern = WriteConcern.W1;
-        } else if (write.toLowerCase().equals("majority")) {
+        } else if (read.toLowerCase().equals("majority") && write.toLowerCase().equals("majority")) {
+            readConcern = ReadConcern.MAJORITY;
             writeConcern = WriteConcern.MAJORITY;
         } else {
+            System.out.println("Read concern level can only be local or majority");
             System.out.println("Write concern level can only be 1 or majority");
             return false;
         }
