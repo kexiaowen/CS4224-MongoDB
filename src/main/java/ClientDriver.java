@@ -15,14 +15,15 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 public class ClientDriver {
-    public MongoClient mongoClient;
-    public MongoDatabase mongoDatabase;
+    private MongoClient mongoClient;
+    private MongoDatabase mongoDatabase;
     private ReadConcern readConcern;
     private WriteConcern writeConcern;
+    private final String DATABASE_NAME = "cs4224";
 
     public static void main(String[] args) {
         ClientDriver driver = new ClientDriver();
-        if (!driver.checkArguments(args)) { return; }
+        if (!driver.checkArgumentsAndConfig(args)) { return; }
         String ip = args[0]; // "192.168.48.219";
         int port = 27017;
         driver.connect(ip, port);
@@ -127,7 +128,7 @@ public class ClientDriver {
         System.out.println(myDoc.toJson());
     }
 
-    private boolean checkArguments(String[] args) {
+    private boolean checkArgumentsAndConfig(String[] args) {
         if (args.length < 3) {
             System.out.println("Wrong argument input, correct format is " +
                     "~/apache-maven-3.5.4/bin/mvn exec:java -Dexec.args=\"[ip_address] [read_concern] [write_concern] < [input_file_name]\"");
@@ -156,6 +157,6 @@ public class ClientDriver {
                         .applyToClusterSettings(builder ->
                                 builder.hosts(Arrays.asList(new ServerAddress(ip, port))))
                         .build());
-        mongoDatabase = mongoClient.getDatabase("test").withReadConcern(readConcern).withWriteConcern(writeConcern);
+        mongoDatabase = mongoClient.getDatabase(DATABASE_NAME).withReadConcern(readConcern).withWriteConcern(writeConcern);
     }
 }
