@@ -8,6 +8,7 @@ import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.push;
 import static com.mongodb.client.model.Updates.set;
 
 public class Transaction1 {
@@ -97,9 +98,9 @@ public class Transaction1 {
     private double insertOrderAndComputePrice(Document order) {
         double totalAmount = 0;
         ArrayList<Document> orderLines = new ArrayList<Document>();
+        ArrayList<Document> shortOrderLines = new ArrayList<Document>();
         MongoCollection<Document> stockCollection = mongoDatabase.getCollection("item_stock");
         MongoCollection<Document> allStockInfoCollection = mongoDatabase.getCollection("stock_misc");
-        MongoCollection<Document> orderCollection = mongoDatabase.getCollection("order");
         for (int i = 0; i < num_items; i++) {
 
             Document itemStock = stockCollection.find(eq("i_id", item_number[i])).first();
@@ -150,13 +151,23 @@ public class Transaction1 {
                     .append("ol_delivery_d", "null")
                     .append("ol_dist_info", distInfo)
                     .append("i_name", itemName[i]);
+            Document shortOrderLine = new Document().append("ol_i_id", item_number[i]);
 
             orderLines.add(orderLine);
+            shortOrderLines.add(shortOrderLine);
         }
-
+        MongoCollection<Document> orderCollection = mongoDatabase.getCollection("order");
         order.append("order_lines", orderLines);
         orderCollection.insertOne(order);
 
+        MongoCollection<Document> customerOrderCollection = mongoDatabase.getCollection("customer_order");
+        Document shortOrder = new Document()
+                .append("o_id", order.getInteger("o_id"))
+                .append("order_lines", shortOrderLines);
+        customerOrderCollection.updateOne(and(eq("c_w_id", W_ID),
+                eq("c_d_id", D_ID),
+                eq("c_id", C_ID)),
+                push("orders", shortOrder));
         return totalAmount;
     }
 
