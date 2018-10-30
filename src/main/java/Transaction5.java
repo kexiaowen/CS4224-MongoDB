@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.TreeSet;
 
 import com.mongodb.client.FindIterable;
@@ -32,7 +33,7 @@ public class Transaction5 {
                 .sort(Sorts.descending("o_id")).limit(L).iterator();
         while (orderIter.hasNext()) {
             Document order = orderIter.next();
-            Document[] orderLines = (Document[]) order.get("order_lines");
+            List<Document> orderLines = (List<Document>) order.get("order_lines");
             for (Document orderLine : orderLines) {
                 int itemId = orderLine.getInteger("ol_i_id");
                 items.add(itemId);

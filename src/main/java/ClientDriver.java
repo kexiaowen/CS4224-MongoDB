@@ -131,7 +131,7 @@ public class ClientDriver {
     private boolean checkArgumentsAndConfig(String[] args) {
         if (args.length < 3) {
             System.out.println("Wrong argument input, correct format is " +
-                    "~/apache-maven-3.5.4/bin/mvn exec:java -Dexec.args=\"[ip_address] [read_concern] [write_concern] < [input_file_name]\"");
+                    "~/apache-maven-3.5.4/bin/mvn exec:java -Dexec.args=\"[ip_address] [read_concern] [write_concern]\" < [input_file_name]");
             return false;
         }
         String read = args[1];
