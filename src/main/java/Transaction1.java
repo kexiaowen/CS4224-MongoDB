@@ -1,6 +1,7 @@
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -104,12 +105,12 @@ public class Transaction1 {
         for (int i = 0; i < num_items; i++) {
 
             Document itemStock = stockCollection.find(eq("i_id", item_number[i])).first();
-            Document[] stocks = (Document[]) itemStock.get("stocks");
+            List<Document> stocks = (List<Document>) itemStock.get("stocks");
             Document targetStock = null;
             int id = -1;
-            for (int j = 0; j < stocks.length; j++) {
-                if (stocks[j].getInteger("s_w_id") == W_ID) {
-                    targetStock = stocks[j];
+            for (int j = 0; j < stocks.size(); j++) {
+                if (stocks.get(j).getInteger("s_w_id") == W_ID) {
+                    targetStock = stocks.get(j);
                     id = j;
                     break;
                 }
@@ -124,10 +125,10 @@ public class Transaction1 {
             int remoteCnt = targetStock.getInteger("s_remote_cnt");
             if (supplier_warehouse[i] != W_ID) { remoteCnt++; }
             // TODO: update the stock info
-            stocks[id].put("s_ytd", sYtd + quantity[i]);
-            stocks[id].put("s_order_cnt", orderCnt + 1);
-            stocks[id].put("s_remote_cnt", remoteCnt);
-            stocks[id].put("s_quantity", adjustedQuantity);
+            stocks.get(id).put("s_ytd", sYtd + quantity[i]);
+            stocks.get(id).put("s_order_cnt", orderCnt + 1);
+            stocks.get(id).put("s_remote_cnt", remoteCnt);
+            stocks.get(id).put("s_quantity", adjustedQuantity);
             stockCollection.updateOne(eq("i_id", item_number[i]), set("stocks", Arrays.asList(stocks)));
 
             itemName[i] = itemStock.getString("i_name");
