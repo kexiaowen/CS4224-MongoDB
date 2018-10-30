@@ -105,7 +105,7 @@ public class Transaction1 {
         for (int i = 0; i < num_items; i++) {
 
             Document itemStock = stockCollection.find(eq("i_id", item_number[i])).first();
-            List<Document> stocks = (List<Document>) itemStock.get("stocks");
+            List<Document> stocks = (ArrayList<Document>) itemStock.get("stocks");
             Document targetStock = null;
             int id = -1;
             for (int j = 0; j < stocks.size(); j++) {
@@ -124,12 +124,11 @@ public class Transaction1 {
             int orderCnt = targetStock.getInteger("s_order_cnt");
             int remoteCnt = targetStock.getInteger("s_remote_cnt");
             if (supplier_warehouse[i] != W_ID) { remoteCnt++; }
-            // TODO: update the stock info
             stocks.get(id).put("s_ytd", sYtd + quantity[i]);
             stocks.get(id).put("s_order_cnt", orderCnt + 1);
             stocks.get(id).put("s_remote_cnt", remoteCnt);
             stocks.get(id).put("s_quantity", adjustedQuantity);
-            stockCollection.updateOne(eq("i_id", item_number[i]), set("stocks", Arrays.asList(stocks)));
+            stockCollection.updateOne(eq("i_id", item_number[i]), set("stocks", stocks));
 
             itemName[i] = itemStock.getString("i_name");
             itemPrice[i] = itemStock.getDouble("i_price");
@@ -141,15 +140,11 @@ public class Transaction1 {
             String distInfo = allDistrictInfo.getString(key);
 
             Document orderLine = new Document()
-                    .append("ol_o_id", order.getString("o_id"))
-                    .append("ol_w_id", W_ID)
-                    .append("ol_d_id", D_ID)
                     .append("ol_number", i)
                     .append("ol_i_id", item_number[i])
                     .append("ol_supply_w_id", supplier_warehouse[i])
                     .append("ol_quantity", quantity[i])
                     .append("ol_amount", itemAmount)
-                    .append("ol_delivery_d", "null")
                     .append("ol_dist_info", distInfo)
                     .append("i_name", itemName[i]);
             Document shortOrderLine = new Document().append("ol_i_id", item_number[i]);
