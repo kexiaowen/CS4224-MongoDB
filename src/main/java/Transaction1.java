@@ -70,7 +70,7 @@ public class Transaction1 {
         }
 
         MongoCollection<Document> customerCollection = mongoDatabase.getCollection("customer");
-        Document d2 = customerCollection.find(and(eq("c_w_id", C_ID), eq("c_d_id", D_ID),
+        Document d2 = customerCollection.find(and(eq("c_w_id", W_ID), eq("c_d_id", D_ID),
                 eq("c_id", C_ID))).first();
         String first = d2.getString("c_first");
         String middle = d2.getString("c_middle");
