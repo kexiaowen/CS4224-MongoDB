@@ -43,7 +43,7 @@ public class Transaction5 {
         int result = 0;
         for (int itemId : items) {
             Document item = stockCollection.find(eq("i_id", itemId)).first();
-            Document[] stocks = (Document[]) item.get("stocks");
+            List<Document> stocks = (List<Document>) item.get("stocks");
             for (Document stock : stocks) {
                 if (stock.getInteger("s_w_id") == W_ID) {
                     if (stock.getDouble("s_quantity") < threshold) {
