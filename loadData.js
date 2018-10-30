@@ -4,20 +4,51 @@ db.dropDatabase()
 db = db.getSiblingDB('cs4224')
 
 sh.enableSharding("cs4224")
-db.stockMiscell.ensureIndex({s_w_id:"hashed"})
-sh.shardCollection("cs4224.stockMiscell",{"s_w_id":"hashed"})
 
-db.item.ensureIndex({i_id:"hashed"})
-sh.shardCollection("cs4224.item", {"i_id":"hashed"})
+//db.stockMiscell.ensureIndex({s_w_id:"hashed"})
+//sh.shardCollection("cs4224.stockMiscell",{"s_w_id":"hashed"})
+//
+//db.item.ensureIndex({i_id:"hashed"})
+//sh.shardCollection("cs4224.item", {"i_id":"hashed"})
+//
+//db.order.ensureIndex({o_id:"hashed"})
+//sh.shardCollection("cs4224.order", {"o_id":"hashed"})
+//
+//db.customerMiscell.ensureIndex({c_id:"hashed"})
+//sh.shardCollection("cs4224.customerMiscell", {"c_id":"hashed"})
+//
+//db.warehouse_district_customer.ensureIndex({w_id:"hashed"})
+//sh.shardCollection("cs4224.warehouse_district_customer", {"w_id":"hashed"})
+//
+//db.warehouse_stock.ensureIndex({w_id:"hashed"})
+//sh.shardCollection("cs4224.warehouse_stock", {"w_id":"hashed"})
 
-db.order.ensureIndex({o_id:"hashed"})
-sh.shardCollection("cs4224.order", {"o_id":"hashed"})
+db.next_avail_order.createIndex({"d_w_id":1, "d_id":1})
+sh.shardCollection("cs4224.next_avail_order", {"d_w_id":1, "d_id":1})
 
-db.customerMiscell.ensureIndex({c_id:"hashed"})
-sh.shardCollection("cs4224.customerMiscell", {"c_id":"hashed"})
+db.order.createIndex({"o_w_id":1, "o_d_id":1, "o_carrier_id":1})
+sh.shardCollection("cs4224.order", {"o_w_id":1, "o_d_id":1, "o_carrier_id":1})
 
-db.warehouse_district_customer.ensureIndex({w_id:"hashed"})
-sh.shardCollection("cs4224.warehouse_district_customer", {"w_id":"hashed"})
+db.item_stock.createIndex({"i_id":1})
+sh.shardCollection("cs4224.item_stock", {"i_id":1})
 
-db.warehouse_stock.ensureIndex({w_id:"hashed"})
-sh.shardCollection("cs4224.warehouse_stock", {"w_id":"hashed"})
+db.customer.createIndex({"c_w_id":1, "c_d_id":1, "c_id":1})
+sh.shardCollection("cs4224.customer", {"c_w_id":1, "c_d_id":1, "c_id":1})
+
+db.district.createIndex({"w_id":1})
+sh.shardCollection("cs4224.district", {"w_id":1})
+
+db.district_address.createIndex({"w_id":1, "d_id":1})
+sh.shardCollection("cs4224.district_address", {"w_id":1, "d_id":1})
+
+db.customer_order.createIndex({"c_w_id":1, "c_d_id":1, "c_id":1})
+sh.shardCollection("cs4224.customer_order", {"c_w_id":1, "c_d_id":1, "c_id":1})
+
+db.stock_misc.createIndex({"s_w_id":1, "w_i_id":1})
+sh.shardCollection("cs4224.stock_misc", {"s_w_id":1, "w_i_id":1})
+
+db.item_misc.createIndex({"i_id":1})
+sh.shardCollection("cs4224.item_misc", {"i_id":1})
+
+db.customer_misc.createIndex({"c_w_id":1})
+sh.shardCollection("cs4224.customer_misc", {"c_w_id":1})
