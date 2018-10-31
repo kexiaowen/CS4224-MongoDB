@@ -54,8 +54,7 @@ public class Transaction2 {
         if (districtIndex != -1) {
             double d_ytd = targetDistrict.getDouble("d_ytd");
             double updated_d_ytd = d_ytd + payment;
-            targetDistrict.put("d_ytd", updated_d_ytd);
-            districts.add(districtIndex, targetDistrict);
+            districts.get(districtIndex).put("d_ytd", updated_d_ytd);
         }
 
         // perform updates
