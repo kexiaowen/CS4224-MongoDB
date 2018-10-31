@@ -1,5 +1,7 @@
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -35,23 +37,28 @@ public class Transaction6 {
         ArrayList<Integer> popular_item_ids = new ArrayList<>();
         ArrayList<String> popular_item_names = new ArrayList<>();
 
-        for(int i = 1; i <= L; i++) {
+        MongoCursor<Document> order_cursor = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID))).sort(Sorts.descending("o_id")).limit(L).iterator();
+
+//        for(int i = 1; i <= L; i++) {
+        while (order_cursor.hasNext()) {
             // for each order, extract the order_lines
-            int o_id = next_o_id - i;
-            Document order = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID), eq("o_id", o_id))).first();
+
+            Document order = order_cursor.next();
+//            int o_id = next_o_id - i;
+
             List<Document> order_lines = (ArrayList<Document>) order.get("order_lines");
 
             // get popular item ID set
             ArrayList<Integer> i_ids = new ArrayList<>();
             ArrayList<String> i_names = new ArrayList<>();
-            int max_quantity = 0;
+            double max_quantity = 0;
             for(Document order_line : order_lines) {
-                int ol_quantity = order_line.getInteger("ol_quantity");
+                double ol_quantity = order_line.getDouble("ol_quantity");
                 max_quantity = Math.max(max_quantity, ol_quantity);
             }
 
             for(Document order_line : order_lines) {
-                int ol_quantity = order_line.getInteger("ol_quantity");
+                double ol_quantity = order_line.getDouble("ol_quantity");
                 if(ol_quantity == max_quantity) {
                     i_ids.add(order_line.getInteger("ol_i_id"));
                     i_names.add(order_line.getString("i_name"));
@@ -62,6 +69,7 @@ public class Transaction6 {
             popular_item_names.addAll(i_names);
 
             //output information
+            int o_id = order.getInteger("o_id");
             String entry_d = order.getString("o_entry_d");
             System.out.println("Order ID: " + o_id + " and entry date and time: " + entry_d);
 
@@ -84,14 +92,18 @@ public class Transaction6 {
             popular_item_count.add(0);
         }
 
-        for (int i = 1; i <= L; i++) {
-            int o_id = next_o_id - i;
-            Document order = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID), eq("o_id", o_id))).first();
+        order_cursor = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID))).sort(Sorts.descending("o_id")).limit(L).iterator();
+
+//        for (int i = 1; i <= L; i++) {
+        while (order_cursor.hasNext()) {
+            Document order = order_cursor.next();
+            int o_id = order.getInteger("o_id");
+//            Document order = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID), eq("o_id", o_id))).first();
             List<Document> order_lines = (ArrayList<Document>) order.get("order_lines");
 
             for (int j = 0; j < popular_item_ids.size(); j++) {
                 for (Document order_line : order_lines) {
-                    if (order_line.getInteger("ol_i_id") == popular_item_ids.get(j)) {
+                    if (order_line.getInteger("ol_i_id").equals(popular_item_ids.get(j))) {
                         int count = popular_item_count.get(j);
                         popular_item_count.set(j, count+1);
                     }
@@ -104,7 +116,7 @@ public class Transaction6 {
             String name = popular_item_names.get(i);
             double percentage = popular_item_count.get(i) * 100.0 / L;
 
-            System.out.printf("Item_name: &s, percentage of orders that contain this popular item: %f%%. \n", name, percentage);
+            System.out.printf("Item_name: %s, percentage of orders that contain this popular item: %f%%. \n", name, percentage);
         }
     }
 }
