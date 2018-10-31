@@ -20,7 +20,7 @@ public class Transaction1 {
     private int num_items;
     private int[] item_number;
     private int[] supplier_warehouse;
-    private int[] quantity;
+    private double[] quantity;
 
     private double warehouseTax, districtTax, discount;
     private String customerCredit;
@@ -30,7 +30,7 @@ public class Transaction1 {
     private Timestamp timestamp;
 
     public Transaction1(MongoDatabase mongoDatabase, int W_ID, int D_ID, int C_ID, int num_items,
-                        int[] item_number, int[] supplier_warehouse, int[] quantity) {
+                        int[] item_number, int[] supplier_warehouse, double[] quantity) {
         this.mongoDatabase = mongoDatabase;
         this.W_ID = W_ID;
         this.D_ID = D_ID;
@@ -61,7 +61,7 @@ public class Transaction1 {
     }
 
     private Document createNewOrder(int nextOid) {
-        int allLocal = 1;
+        double allLocal = 1;
         for (int i = 0; i < num_items; i++) {
             if (supplier_warehouse[i] != W_ID) {
                 allLocal = 0;
@@ -87,7 +87,7 @@ public class Transaction1 {
                 .append("o_d_id", D_ID)
                 .append("o_c_id", C_ID)
                 .append("o_carrier_id", -1)
-                .append("o_ol_cnt", num_items)
+                .append("o_ol_cnt", (double) num_items)
                 .append("o_entry_d", timestamp.toString())
                 .append("o_all_local", allLocal)
                 .append("o_delivery_d", "null")

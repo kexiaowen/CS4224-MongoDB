@@ -27,7 +27,6 @@ public class ClientDriver {
         String ip = args[0]; // "192.168.48.219";
         int port = 27017;
         driver.connect(ip, port);
-        // driver.test();
 
         long startTime = System.currentTimeMillis();
         int totalXact = driver.readInput();
@@ -37,6 +36,7 @@ public class ClientDriver {
         System.err.println("Total transaction: " + totalXact);
         System.err.println("Running time: " + totalTime);
         System.err.println("Transaction throughput: " + totalXact / totalTime);
+        //driver.printFinalState();
     }
 
     private int readInput() {
@@ -57,12 +57,12 @@ public class ClientDriver {
                     int numItem = Integer.valueOf(firstRow[4]);
                     int[] item_number = new int[numItem];
                     int[] supplier_warehouse = new int[numItem];
-                    int[] quantity = new int[numItem];
+                    double[] quantity = new double[numItem];
                     for (int i = 0; i < numItem; i++) {
                         String[] row = sc.next().split(",");
                         item_number[i] = Integer.valueOf(row[0]);
                         supplier_warehouse[i] = Integer.valueOf(row[1]);
-                        quantity[i] = Integer.valueOf(row[2]);
+                        quantity[i] = Double.valueOf(row[2]);
                     }
                     new Transaction1(mongoDatabase, WID1, DID1, CID1, numItem,
                             item_number, supplier_warehouse, quantity).execute();
@@ -122,10 +122,8 @@ public class ClientDriver {
         return totalXact;
     }
 
-    private void test() {
-        MongoCollection<Document> collection = mongoDatabase.getCollection("Customer");
-        Document myDoc = collection.find().first();
-        System.out.println(myDoc.toJson());
+    private void printFinalState() {
+        new FinalState(mongoDatabase).execute();
     }
 
     private boolean checkArgumentsAndConfig(String[] args) {
