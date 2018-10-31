@@ -27,25 +27,18 @@ public class Transaction6 {
         System.out.println("Warehouse number: " + W_ID + " and District number:" + D_ID);
         System.out.println("Number of last orders to be examined: " + L);
 
-        MongoCollection<Document> nextAvailCollection = mongoDatabase.getCollection("next_avail_order");
         MongoCollection<Document> orderCollection = mongoDatabase.getCollection("order");
-        MongoCollection<Document> customerCollection = mongoDatabase.getCollection("customer");
-
-        Document next_avail_order = nextAvailCollection.find(and(eq("d_w_id", W_ID), eq("d_id", D_ID))).first();
-        int next_o_id = next_avail_order.getInteger("d_next_o_id");
 
         ArrayList<Integer> popular_item_ids = new ArrayList<>();
         ArrayList<String> popular_item_names = new ArrayList<>();
+        ArrayList<Document> last_L_orders = new ArrayList<>();
 
-        MongoCursor<Document> order_cursor = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID))).sort(Sorts.descending("o_id")).limit(L).iterator();
+        MongoCursor<Document> order_cursor = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID)))
+                .sort(Sorts.descending("o_id")).limit(L).iterator();
 
-//        for(int i = 1; i <= L; i++) {
         while (order_cursor.hasNext()) {
-            // for each order, extract the order_lines
-
             Document order = order_cursor.next();
-//            int o_id = next_o_id - i;
-
+            last_L_orders.add(order);
             List<Document> order_lines = (ArrayList<Document>) order.get("order_lines");
 
             // get popular item ID set
@@ -73,12 +66,9 @@ public class Transaction6 {
             String entry_d = order.getString("o_entry_d");
             System.out.println("Order ID: " + o_id + " and entry date and time: " + entry_d);
 
-            int c_id = order.getInteger("o_c_id");
-
-            Document customer = customerCollection.find(and(eq("c_w_id", W_ID), eq("c_d_id", D_ID), eq("c_id", c_id))).first();
-            String c_first = customer.getString("c_first");
-            String c_middle = customer.getString("c_middle");
-            String c_last = customer.getString("c_last");
+            String c_first = order.getString("c_first");
+            String c_middle = order.getString("c_middle");
+            String c_last = order.getString("c_last");
             System.out.println("customer first name: " + c_first + " second name: " + c_middle + " and third name: " + c_last);
 
             for(int j = 0; j < i_ids.size(); j++) {
@@ -86,26 +76,15 @@ public class Transaction6 {
             }
         }
 
-        ArrayList<Integer> popular_item_count = new ArrayList<>();
+        int[] popular_item_count = new int[popular_item_ids.size()];
 
-        for (int i = 0; i < popular_item_ids.size(); i++) {
-            popular_item_count.add(0);
-        }
-
-        order_cursor = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID))).sort(Sorts.descending("o_id")).limit(L).iterator();
-
-//        for (int i = 1; i <= L; i++) {
-        while (order_cursor.hasNext()) {
-            Document order = order_cursor.next();
-            int o_id = order.getInteger("o_id");
-//            Document order = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", D_ID), eq("o_id", o_id))).first();
+        for (Document order : last_L_orders) {
             List<Document> order_lines = (ArrayList<Document>) order.get("order_lines");
 
             for (int j = 0; j < popular_item_ids.size(); j++) {
                 for (Document order_line : order_lines) {
                     if (order_line.getInteger("ol_i_id").equals(popular_item_ids.get(j))) {
-                        int count = popular_item_count.get(j);
-                        popular_item_count.set(j, count+1);
+                        popular_item_count[j]++;
                     }
                 }
             }
@@ -114,7 +93,7 @@ public class Transaction6 {
         // output popular percentage information
         for (int i = 0; i < popular_item_ids.size(); i++) {
             String name = popular_item_names.get(i);
-            double percentage = popular_item_count.get(i) * 100.0 / L;
+            double percentage = popular_item_count[i] * 100.0 / L;
 
             System.out.printf("Item_name: %s, percentage of orders that contain this popular item: %f%%. \n", name, percentage);
         }
