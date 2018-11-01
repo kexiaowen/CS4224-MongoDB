@@ -180,7 +180,7 @@ public class Transaction1 {
         System.out.println("Num_items: " + num_items + " Total_amount: " + totalAmount);
 
         for (int i = 0; i < num_items; i++) {
-            System.out.printf("Item number: %d, Item name: %s, Supplier warehouse: %d, Quantity: %d, " +
+            System.out.printf("Item number: %d, Item name: %s, Supplier warehouse: %d, Quantity: %f, " +
                             "OL_amount: %f, S_quantity: %f\n", item_number[i], itemName[i], supplier_warehouse[i],
                     quantity[i], itemPrice[i] * quantity[i], stockQuantity[i]);
         }
