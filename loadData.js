@@ -10,7 +10,7 @@ db.next_avail_order.createIndex({"d_w_id":1, "d_id":1})
 sh.shardCollection("cs4224.next_avail_order", {"d_w_id":1})
 
 db.order.createIndex({"o_w_id":1, "o_d_id":1, "o_id":-1})
-db.order.createIndex({"o_w_id":1, "o_d_id":1, "o_c_id":1})
+db.order.createIndex({"o_w_id":1, "o_d_id":1, "o_c_id":1, "o_id":-1})
 db.order.createIndex({"o_w_id":1, "o_d_id":1, "o_carrier_id":1})
 sh.shardCollection("cs4224.order", {"o_w_id":1})
 
