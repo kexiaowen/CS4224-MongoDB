@@ -30,7 +30,7 @@ sh.shardCollection("cs4224.district_address", {"w_id":1})
 db.customer_order.createIndex({"c_w_id":1, "c_d_id":1, "c_id":1})
 sh.shardCollection("cs4224.customer_order", {"c_w_id":1})
 
-db.stock_misc.createIndex({"s_w_id":1, "w_i_id":1})
+db.stock_misc.createIndex({"s_w_id":1, "s_i_id":1})
 sh.shardCollection("cs4224.stock_misc", {"s_w_id":1})
 
 db.item_misc.createIndex({"i_id":1})
