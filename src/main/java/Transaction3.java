@@ -32,6 +32,9 @@ public class Transaction3 {
         for (int i = 1; i <= 10; i++) {
             Document order = orderCollection.find(and(eq("o_w_id", W_ID), eq("o_d_id", i), eq("o_carrier_id", -1)))
                     .sort(Sorts.ascending("o_id")).first();
+            if (order == null) {
+                continue;
+            }
 
             // update o_carrier_id
             int o_id = order.getInteger("o_id");
