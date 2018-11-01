@@ -86,15 +86,12 @@ public class Transaction2 {
         double c_discount = customerDocument.getDouble("c_discount");
 
         customerCollection.updateOne(and(eq("c_w_id", C_W_ID), eq("c_d_id", C_D_ID), eq("c_id", C_ID)),
-                combine(set("c_balance", updated_c_balance),
+                combine(
+                        set("c_balance", updated_c_balance),
                         set("c_ytd_payment", c_ytd_payment + payment),
-                        set("c_payment_cnt", c_payment_cnt + 1)));
-
-        // update c_balance in order collection
-        MongoCollection<Document> orderCollection = mongoDatabase.getCollection("order");
-
-        orderCollection.updateMany(and(eq("o_w_id", C_W_ID), eq("o_d_id", C_D_ID), eq("o_c_id", C_ID)),
-                set("c_balance", updated_c_balance));
+                        set("c_payment_cnt", c_payment_cnt + 1)
+                )
+        );
 
         // print
         System.out.printf("Id: %d, %d, %d\nName: %s %s %s\nAddress: %s, %s, %s, %s, %s\n"

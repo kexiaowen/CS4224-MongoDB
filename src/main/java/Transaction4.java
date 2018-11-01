@@ -8,6 +8,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.include;
 
 public class Transaction4 {
     private int C_W_ID, C_D_ID, C_ID;
@@ -22,6 +23,7 @@ public class Transaction4 {
 
     public void execute() {
         MongoCollection<Document> orderCollection = mongoDatabase.getCollection("order");
+        MongoCollection<Document> customerCollection = mongoDatabase.getCollection("customer");
         Document order = orderCollection.find(and(eq("o_w_id", C_W_ID),
                 eq("o_d_id", C_D_ID),
                 eq("o_c_id", C_ID)))
@@ -29,7 +31,10 @@ public class Transaction4 {
         String first = order.getString("c_first");
         String middle = order.getString("c_middle");
         String last = order.getString("c_last");
-        double balance = order.getDouble("c_balance");
+
+        Document customer = customerCollection.find(and(eq("c_w_id", C_W_ID), eq("c_d_id", C_D_ID),
+                eq("c_id", C_ID))).projection(include("c_balance")).first();
+        double balance = customer.getDouble("c_balance");
         System.out.printf("Name: %s %s %s. Balance: %f\n", first, middle, last, balance);
 
         int oId = order.getInteger("o_id");

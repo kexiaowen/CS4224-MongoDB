@@ -75,7 +75,6 @@ public class Transaction1 {
         String first = d2.getString("c_first");
         String middle = d2.getString("c_middle");
         String last = d2.getString("c_last");
-        double balance = d2.getDouble("c_balance");
         warehouseTax = d2.getDouble("w_tax");
         districtTax = d2.getDouble("d_tax");
         customerCredit = d2.getString("c_credit");
@@ -93,8 +92,7 @@ public class Transaction1 {
                 .append("o_delivery_d", "null")
                 .append("c_first", first)
                 .append("c_middle", middle)
-                .append("c_last", last)
-                .append("c_balance", balance);
+                .append("c_last", last);
         return order;
     }
 

@@ -51,8 +51,9 @@ public class Transaction3 {
             orderCollection.updateOne(and(eq("o_w_id", W_ID), eq("o_d_id", i), eq("o_id", o_id)),
                     combine(
                             set("o_carrier_id", CARRIER_ID),
-                            set("o_delivery_d", new Timestamp(System.currentTimeMillis()).toString()),
-                            set("c_balance", new_balance)));
+                            set("o_delivery_d", new Timestamp(System.currentTimeMillis()).toString())
+                    )
+            );
 
             customerCollection.updateOne(and(eq("c_w_id", W_ID), eq("c_d_id", i), eq("c_id", c_id)),
                     combine(set("c_balance", new_balance), set("c_delivery_cnt", c_delivery_cnt +1)));
