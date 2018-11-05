@@ -109,7 +109,7 @@ def delete_attribute(all_records, attributes):
 
 
 def write_to_json(all_records, path):
-    with open (path, "w") as fp:
+    with open(os.path.join("jsonProcess", path), "w") as fp:
         for record in all_records:
             json.dump(record, fp)
             fp.write("\n")
