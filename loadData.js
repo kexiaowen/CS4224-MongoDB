@@ -5,7 +5,6 @@ db = db.getSiblingDB('cs4224')
 
 sh.enableSharding("cs4224")
 
-
 db.next_avail_order.createIndex({"d_w_id":1, "d_id":1})
 sh.shardCollection("cs4224.next_avail_order", {"d_w_id":1})
 

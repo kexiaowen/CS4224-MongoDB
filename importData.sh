@@ -1,5 +1,4 @@
 #!/bin/bash
--- Updated, havent tested yet --delete before submit
 
 /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin/mongo $1:27017 loadData.js
 /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin/mongoimport --host $1 --port 27017 --db cs4224 --collection customer --type json --file ~/CS4224-MongoDB/jsonProcess/customer.json
