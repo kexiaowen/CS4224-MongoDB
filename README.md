@@ -1,21 +1,21 @@
 # CS4224-MongoDB
 
 ## Installing and Running MongoDB
-1. Install MongoDB on the cluster of machines in the `/temp` folder from binary tarball files. Unarchive the files into folder `/temp/mongodb-linux-x86_64-rhel70-4.0.3`
+1. Install MongoDB on every cluster of machines in the `/temp` folder from binary tarball files. Unarchive the files into folder `/temp/mongodb-linux-x86_64-rhel70-4.0.3`
     
             > cd /temp
             > wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-4.0.3.tgz
             > tar -xzf mongodb-linux-x86_64-rhel70-4.0.3.tgz
 
 2. Create a new sharded cluster that consists of five mongos, the config server replica set, and a shard replica set.
-    1. Create directories for storing data and logs
+    1. Create directories for storing data and logs for all five nodes
     
             > cd /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin 
             > mkdir -p data/db
             > mkdir -p data/shard
             > mkdir logs
 
-    2. Create the Config Server Replica Set on nodes 0, 2 and 4. Run the following command on each node. Replace <node_ip_address> with the IP address of the node.
+    2. Create the Config Server Replica Set on nodes 0, 2 and 4. Run the following command on each of the three nodes. Replace <node_ip_address> with the IP address of the node.
 
             > ./mongod --configsvr --replSet cfgrs --dbpath /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin/data/db --logpath /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin/logs/configsvr.log --bind_ip <node_ip_address> --fork
             
@@ -28,8 +28,8 @@
             > cd /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin
             > ./mongo --host <config_server_node_ip_address> --port 27019
             
-            In the mongo shell, run the following method:
-            cfgrs:SECONDARY> rs.initiate(
+            In the mongo shell, run the following method, and then type `exit` to exit the shell.
+            rs.initiate(
                   {
                     _id: "cfgrs",
                     configsvr: true,
@@ -55,8 +55,8 @@
     
             > ./mongo --host <node_ip_addr> --port 27018
             
-            In the mongo shell, run the following method:
-            rs:SECONDARY> rs.initiate( {
+            In the mongo shell, run the following method, and then type `exit` to exit the shell
+            rs.initiate( {
                    _id : "rs",
                    members: [
                       { _id: 0, host: "192.168.48.219:27018" },
@@ -71,6 +71,7 @@
     6. Connect mongos to the Sharded Cluster on each of the five nodes in the cluster. 
             
             > ./mongos --configdb cfgrs/<config_server1_ip>:27019,<config_server2_ip>:27019,<config_server3_ip>:27019 --bind_ip <node_ip_addr> --logpath /temp/mongodb-linux-x86_64-rhel70-4.0.3/bin/logs/mongos.log --fork
+	    The three config_server_ip are the ips from the step iii.
     
         For example, on node with IP address 192.168.48.220, run the following command: 
     
@@ -111,7 +112,14 @@
 
 2. Loading Data into MongoDB
     1. Place project data files at directory `~/4224-project-files` so that data files are found in `~/4224-project-files/data-files` and transaction files are found in `~/4224-project-files/xact-files`.
-    2. Execute shell script `importData.sh` by running the following commands:
+    
+    2. Process the json files using the following command:
+    
+    		> python processJson.py &
+	
+    	Note that this will take about 15 minutes to finish. Please continue subsequent work until you see "All finished in xxx seconds".
+
+    3. Execute shell script `importData.sh` by running the following commands:
 
             > cd CS4224-MongoDB
 
